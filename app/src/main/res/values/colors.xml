@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_background">#FFFFFF</color>
+    <color name="widget_text_primary">#1C1B1F</color>
+    <color name="widget_score_positive">#2E7D32</color>
+    <color name="widget_score_negative">#D32F2F</color>
+</resources>
