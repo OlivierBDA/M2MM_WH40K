@@ -1,0 +1,64 @@
+{
+  "widget_progression_thresholds": {
+    "Au top": 500,
+    "Correct": 250,
+    "Stagnant": 0,
+    "Négatif": -1
+  },
+  "status_levels": {
+    "good": [
+      {
+        "label": "Au top",
+        "emoji": "🤩",
+        "color": "#1E90FF"
+      },
+      {
+        "label": "Super",
+        "emoji": "😁",
+        "color": "#4169E1"
+      },
+      {
+        "label": "Correct",
+        "emoji": "🤨",
+        "color": "#2E8B57"
+      },
+      {
+        "label": "Bof",
+        "emoji": "😥",
+        "color": "#FFA500"
+      },
+      {
+        "label": "Mauvais",
+        "emoji": "😫",
+        "color": "#DC143C"
+      }
+    ],
+    "bad": [
+      {
+        "label": "Mauvais",
+        "emoji": "😫",
+        "color": "#DC143C"
+      },
+      {
+        "label": "Bof",
+        "emoji": "😥",
+        "color": "#FFA500"
+      },
+      {
+        "label": "Correct",
+        "emoji": "🤨",
+        "color": "#2E8B57"
+      },
+      {
+        "label": "Super",
+        "emoji": "😁",
+        "color": "#4169E1"
+      },
+      {
+        "label": "Au top",
+        "emoji": "🤩",
+        "color": "#1E90FF"
+      }
+    ]
+  }
+}

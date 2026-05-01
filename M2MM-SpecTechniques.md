@@ -44,7 +44,7 @@ L'interface est réalisée avec **Jetpack Compose** (Material 3), offrant un des
 
 ### 1.4. Configurabilité
 
-Toute la logique de jeu est définie dans un JSON (`config.json`). L'utilisateur peut modifier les points et les seuils directement via l'interface, les changements étant persistés dans un fichier `user_config.json` local.
+Toute la logique de jeu est définie dans trois fichiers JSON distincts (`activities.json`, `levels.json`, `parameters.json`). L'utilisateur peut modifier les points et les seuils directement via l'interface, les changements étant persistés en toute sécurité dans un fichier `activities.json` local situé dans l'espace utilisateur. L'application possède une logique de migration si un ancien `user_config.json` est présent.
 
 ## 2. Architecture et Choix de Développement
 

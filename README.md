@@ -12,7 +12,7 @@ M2MM est une application Android de suivi d'activités entièrement gamifiée. E
     *   Actions directes : de larges boutons interactifs (60dp) permettent d'enregistrer des activités en un clin d'œil, sans devoir ouvrir l'application.
     *   Mise à jour fiable : utilisation de callbacks personnalisés et de délais temporels pour assurer une synchronisation transparente entre la base de données et l'affichage de l'écran d'accueil.
 *   **Historique et Statistiques** : Suivez la tendance de votre score sur les 30 derniers jours à l'aide d'un graphique interactif élaboré sur mesure.
-*   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par un fichier `config.json`. Il est aisé de basculer d'un thème à l'autre (ex: passage d'un thème *Dragon Ball* à *Warhammer 40k*).
+*   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par des fichiers JSON (`activities.json`, `levels.json`, `parameters.json`). Il est aisé de basculer d'un thème à l'autre (ex: passage d'un thème *Dragon Ball* à *Warhammer 40k*).
 *   **Malus Journalier (Daily Decay)** : Un système de "dégradation" soustrait automatiquement des points au score chaque jour, afin d'encourager la régularité.
 
 ## 🛠️ Architecture et Pipeline Technique
@@ -45,8 +45,9 @@ L'application est construite selon les standards avancés du développement Andr
 Pour modifier l'environnement de votre instance M2MM :
 1.  **Dossier `res/drawable-nodpi/`** : Placez-y vos fonds d'écrans de niveaux haute-résolution. Privilégier ce répertoire empèche les processus internes Android de dégrader la qualité visuelle pour adapter la densité DPI (le `WallpaperHelper` le gère bien mieux).
 2.  **Dossier `res/drawable/`** : Intégrez les petites icônes dédiées aux boutons d'actions (+ et -).
-3.  **Fichier `assets/config.json`** :
-    *   Paramétrez le tableau `levels` en indexant le nom d'affichage, le seuil de bascule vers ce niveau et le nom physique du fichier image (ex: `wh_level1.png`).
-    *   Éditez le tableau `activities` en choisissant : `id`, `name`, le montant accordé (`points`), la localisation des icônes (`align: left|right`) et le comportement du widget (`show_in_widget: boolean`).
+3.  **Fichiers JSON (`assets/`)** :
+    *   **`levels.json`** : Paramétrez le tableau `levels` en indexant le nom d'affichage, le seuil de bascule vers ce niveau et le nom physique du fichier image (ex: `wh_level1.png`).
+    *   **`activities.json`** : Éditez le tableau `activities` en choisissant : `id`, `name`, le montant accordé (`points`), la localisation des icônes (`align: left|right`) et le comportement du widget (`show_in_widget: boolean`).
+    *   **`parameters.json`** : Configurez les seuils et affichages visuels secondaires.
 
-*Note : Afin de garantir le déploiement pur de vos refontes de thèmes via de la Side-load Installation, l'attribut Manifest `android:allowBackup="false"` a été volontairement fixé pour empêcher l'algorithme "Google Auto Backup for Apps" de ré-écraser votre nouveau `config.json` avec un ancien cache Cloud de l'utilisateur.*
+*Note : Afin de garantir le déploiement pur de vos refontes de thèmes via de la Side-load Installation, l'attribut Manifest `android:allowBackup="false"` a été volontairement fixé pour empêcher l'algorithme "Google Auto Backup for Apps" de ré-écraser vos nouveaux fichiers de configuration avec un ancien cache Cloud de l'utilisateur.*

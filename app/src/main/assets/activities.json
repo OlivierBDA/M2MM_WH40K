@@ -1,0 +1,165 @@
+{
+  "daily_decay_points": -25,
+  "activities": [
+    {
+      "id": "pompes",
+      "name": "Pompes",
+      "points": 50,
+      "icon": "ultramarine_icon_pompes.png",
+      "align": "left",
+      "order": 1,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 1,
+        "Super": 2,
+        "Correct": 3,
+        "Bof": 5,
+        "Mauvais": 7
+      }
+    },
+    {
+      "id": "tractions",
+      "name": "Tractions",
+      "points": 50,
+      "icon": "ultramarine_icon_tractions.png",
+      "align": "left",
+      "order": 2,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 1,
+        "Super": 2,
+        "Correct": 3,
+        "Bof": 5,
+        "Mauvais": 7
+      }
+    },
+    {
+      "id": "course",
+      "name": "Course (1h)",
+      "points": 100,
+      "icon": "ultramarine_icon_course.png",
+      "align": "left",
+      "order": 3,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 7,
+        "Super": 10,
+        "Correct": 14,
+        "Bof": 21,
+        "Mauvais": 30
+      }
+    },
+    {
+      "id": "rameur",
+      "name": "Rameur (30min)",
+      "points": 100,
+      "icon": "ultramarine_icon_rameur.png",
+      "align": "left",
+      "order": 4,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 7,
+        "Super": 10,
+        "Correct": 14,
+        "Bof": 21,
+        "Mauvais": 30
+      }
+    },
+    {
+      "id": "abdos",
+      "name": "Abdos",
+      "points": 25,
+      "icon": "ultramarine_icon_abdos.png",
+      "align": "left",
+      "order": 5,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 1,
+        "Super": 2,
+        "Correct": 3,
+        "Bof": 5,
+        "Mauvais": 7
+      }
+    },
+    {
+      "id": "mauvais_aliment",
+      "name": "Mauvais aliment",
+      "points": -50,
+      "icon": "ultramarine_icon_malbouffe.png",
+      "align": "right",
+      "order": 1,
+      "type": "bad",
+      "day_thresholds": {
+        "Mauvais": 2,
+        "Bof": 4,
+        "Correct": 7,
+        "Super": 14,
+        "Au top": 30
+      }
+    },
+    {
+      "id": "alcool",
+      "name": "Alcool",
+      "points": -50,
+      "icon": "ultramarine_icon_alcool.png",
+      "align": "right",
+      "order": 2,
+      "type": "bad",
+      "day_thresholds": {
+        "Mauvais": 2,
+        "Bof": 4,
+        "Correct": 7,
+        "Super": 14,
+        "Au top": 30
+      }
+    },
+    {
+      "id": "conception_ia",
+      "name": "Conception IA",
+      "points": 50,
+      "icon": "ultramarine_icon_servoskull.png",
+      "align": "right",
+      "order": 3,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 2,
+        "Super": 3,
+        "Correct": 4,
+        "Bof": 7,
+        "Mauvais": 14
+      }
+    },
+    {
+      "id": "miniature_hobby",
+      "name": "Miniature Hobby",
+      "points": 20,
+      "icon": "ultramarine_icon_miniature.png",
+      "align": "right",
+      "order": 4,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 2,
+        "Super": 3,
+        "Correct": 4,
+        "Bof": 7,
+        "Mauvais": 14
+      }
+    },
+    {
+      "id": "halteres",
+      "name": "Halteres",
+      "points": 25,
+      "icon": "ultramarine_icon_halteres.png",
+      "align": "right",
+      "order": 5,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 1,
+        "Super": 2,
+        "Correct": 3,
+        "Bof": 5,
+        "Mauvais": 7
+      }
+    }
+  ]
+}

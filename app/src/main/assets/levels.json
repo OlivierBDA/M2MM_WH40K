@@ -1,0 +1,116 @@
+{
+  "levels": [
+    {
+      "name": "Aspirant",
+      "threshold": 0,
+      "image": "wp_01_dark_angels_niveau1.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Scout",
+      "threshold": 500,
+      "image": "wp_01_dark_angels_niveau2.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Frère de bataille",
+      "threshold": 1000,
+      "image": "wp_01_dark_angels_niveau3.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Sergent",
+      "threshold": 1500,
+      "image": "wp_01_dark_angels_niveau4.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Vétéran",
+      "threshold": 2000,
+      "image": "wp_01_dark_angels_niveau5.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Capitaine",
+      "threshold": 2500,
+      "image": "wp_01_dark_angels_niveau6.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Maitre de Chapitre",
+      "threshold": 3000,
+      "image": "wp_01_dark_angels_niveau7.png",
+      "legion_number": "01",
+      "legion_name": "Dark Angels",
+      "legion_insignia": "insigne_01_dark_angels.png"
+    },
+    {
+      "name": "Aspirant",
+      "threshold": 3500,
+      "image": "wp_03_emperors_children_niveau1.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Scout",
+      "threshold": 4000,
+      "image": "wp_03_emperors_children_niveau2.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Frère de bataille",
+      "threshold": 4500,
+      "image": "wp_03_emperors_children_niveau3.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Sergent",
+      "threshold": 5000,
+      "image": "wp_03_emperors_children_niveau4.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Vétéran",
+      "threshold": 5500,
+      "image": "wp_03_emperors_children_niveau5.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Capitaine",
+      "threshold": 6000,
+      "image": "wp_03_emperors_children_niveau6.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    },
+    {
+      "name": "Maitre de Chapitre",
+      "threshold": 6500,
+      "image": "wp_03_emperors_children_niveau7.png",
+      "legion_number": "03",
+      "legion_name": "Emperor's Children",
+      "legion_insignia": "insigne_03_emperors_children.png"
+    }
+  ]
+}

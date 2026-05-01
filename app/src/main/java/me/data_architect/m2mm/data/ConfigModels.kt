@@ -40,3 +40,20 @@ data class StatusLevel(
     val emoji: String,
     val color: String
 )
+
+@Serializable
+data class ActivitiesConfig(
+    val daily_decay_points: Int,
+    val activities: List<ActivityConfig>
+)
+
+@Serializable
+data class LevelsConfig(
+    val levels: List<LevelConfig>
+)
+
+@Serializable
+data class ParametersConfig(
+    val status_levels: Map<String, List<StatusLevel>>,
+    val widget_progression_thresholds: Map<String, Int> = emptyMap()
+)

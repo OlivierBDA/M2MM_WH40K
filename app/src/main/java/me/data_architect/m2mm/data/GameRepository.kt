@@ -14,37 +14,86 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
         encodeDefaults = true
     }
     
-    private val userConfigFile = context.getFileStreamPath("user_config.json")
+    private val oldUserConfigFile = context.getFileStreamPath("user_config.json")
+    private val activitiesFile = context.getFileStreamPath("activities.json")
 
     fun config() = loadConfig()
 
     fun loadConfig(): GameConfig {
-        if (!userConfigFile.exists()) {
-            copyDefaultConfig()
+        migrateOldConfigIfNeeded()
+
+        if (!activitiesFile.exists()) {
+            copyDefaultActivities()
         }
-        return try {
-            userConfigFile.bufferedReader().use { json.decodeFromString<GameConfig>(it.readText()) }
+
+        val levelsConfig = try {
+            val levelsString = context.assets.open("levels.json").bufferedReader().use { it.readText() }
+            json.decodeFromString<LevelsConfig>(levelsString)
         } catch (e: Exception) {
-            // Fallback to assets if corrupted
-            val configString = context.assets.open("config.json").bufferedReader().use { it.readText() }
-            json.decodeFromString<GameConfig>(configString)
+            LevelsConfig(emptyList())
+        }
+
+        val parametersConfig = try {
+            val paramsString = context.assets.open("parameters.json").bufferedReader().use { it.readText() }
+            json.decodeFromString<ParametersConfig>(paramsString)
+        } catch (e: Exception) {
+            ParametersConfig(emptyMap())
+        }
+
+        val activitiesConfig = try {
+            activitiesFile.bufferedReader().use { json.decodeFromString<ActivitiesConfig>(it.readText()) }
+        } catch (e: Exception) {
+            val defaultString = context.assets.open("activities.json").bufferedReader().use { it.readText() }
+            json.decodeFromString<ActivitiesConfig>(defaultString)
+        }
+
+        return GameConfig(
+            daily_decay_points = activitiesConfig.daily_decay_points,
+            activities = activitiesConfig.activities,
+            levels = levelsConfig.levels,
+            status_levels = parametersConfig.status_levels,
+            widget_progression_thresholds = parametersConfig.widget_progression_thresholds
+        )
+    }
+
+    private fun migrateOldConfigIfNeeded() {
+        if (oldUserConfigFile.exists() && !activitiesFile.exists()) {
+            try {
+                val oldConfigString = oldUserConfigFile.bufferedReader().use { it.readText() }
+                // old user_config.json contains full GameConfig structure
+                val oldConfig = json.decodeFromString<GameConfig>(oldConfigString)
+                val newActivities = ActivitiesConfig(
+                    daily_decay_points = oldConfig.daily_decay_points,
+                    activities = oldConfig.activities
+                )
+                val newActivitiesString = json.encodeToString(ActivitiesConfig.serializer(), newActivities)
+                context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
+                    output.write(newActivitiesString.toByteArray())
+                }
+                oldUserConfigFile.delete()
+            } catch (e: Exception) {
+                // Fallback handled by copyDefaultActivities
+            }
         }
     }
 
-    private fun copyDefaultConfig() {
-        context.assets.open("config.json").use { input ->
-            context.openFileOutput("user_config.json", Context.MODE_PRIVATE).use { output ->
+    private fun copyDefaultActivities() {
+        context.assets.open("activities.json").use { input ->
+            context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
                 input.copyTo(output)
             }
         }
     }
 
     suspend fun saveConfig(newConfig: GameConfig) = withContext(Dispatchers.IO) {
-        val configString = json.encodeToString(GameConfig.serializer(), newConfig)
-        context.openFileOutput("user_config.json", Context.MODE_PRIVATE).use { output ->
+        val activitiesConfig = ActivitiesConfig(
+            daily_decay_points = newConfig.daily_decay_points,
+            activities = newConfig.activities
+        )
+        val configString = json.encodeToString(ActivitiesConfig.serializer(), activitiesConfig)
+        context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
             output.write(configString.toByteArray())
         }
-        // Force reload of lazy config (Note: lazy isn't ideal here, but for this step we'll just restart or force refresh)
     }
 
     suspend fun getGameState(): GameState = withContext(Dispatchers.IO) {
