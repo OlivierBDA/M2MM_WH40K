@@ -28,6 +28,12 @@ M2MM est une application de gamification personnelle conçue pour un usage uniqu
 
 L'interface est réalisée avec **Jetpack Compose** (Material 3), offrant un design moderne et fluide.
 
+*   **Vidéo d'Introduction (VideoIntroScreen) :**
+    *   S'affiche lors du tout premier lancement.
+    *   Lecture en plein écran (adaptation intelligente `CenterCrop` via un zoom uniforme sur le `VideoView`) d'une vidéo `.mp4` du Primarque.
+    *   Détection dynamique du fichier vidéo basée sur le nom et le numéro de la légion en cours.
+    *   Interruption immédiate possible via un clic n'importe où sur l'écran.
+
 *   **Vue Principale (MainScreen) :**
     *   **En-tête** : Affiche le niveau actuel, le score et la progression vers le prochain palier.
     *   **Navigation** : Icône histogramme (gauche) pour les statistiques, icône engrenage (droite) pour les paramètres.
@@ -90,3 +96,4 @@ Le code est structuré dans le package `me.data_architect.m2mm` :
 ### 3.2. Ressources
 
 *   Les images (personnages) et icônes (activités) sont chargées dynamiquement à partir de leurs noms définis dans le JSON via `getIdentifier()`.
+*   Les vidéos d'introduction sont stockées localement dans `app/src/main/res/raw/` et exclues du versionnage Git.

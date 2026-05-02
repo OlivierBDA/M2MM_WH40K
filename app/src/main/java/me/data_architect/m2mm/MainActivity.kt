@@ -29,6 +29,9 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.runtime.saveable.rememberSaveable
 import java.util.Calendar
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -67,6 +70,7 @@ class MainActivity : ComponentActivity() {
                 val scoreHistory by statsViewModel.historyState.collectAsState()
                 
                 var currentScreen by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("main") }
+                var hasPlayedIntro by rememberSaveable { mutableStateOf(false) }
 
                 val context = androidx.compose.ui.platform.LocalContext.current
                 LaunchedEffect(configBySettings.coach_notification_time) {
@@ -86,18 +90,26 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                                 is MainUiState.Success -> {
-                                    MainScreen(
-                                        levelDetails = state.levelDetails,
-                                        lastActivityDates = state.lastActivityDates,
-                                        activities = configBySettings.activities,
-                                        statusLevels = configBySettings.status_levels,
-                                        onActivityClick = { mainViewModel.recordActivity(it) },
-                                        onSettingsClick = { currentScreen = "settings" },
-                                        onStatsClick = { 
-                                            statsViewModel.refreshHistory()
-                                            currentScreen = "stats" 
-                                        }
-                                    )
+                                    if (!hasPlayedIntro) {
+                                        VideoIntroScreen(
+                                            legionNumber = state.levelDetails.currentLevel.legion_number,
+                                            legionName = state.levelDetails.currentLevel.legion_name,
+                                            onFinish = { hasPlayedIntro = true }
+                                        )
+                                    } else {
+                                        MainScreen(
+                                            levelDetails = state.levelDetails,
+                                            lastActivityDates = state.lastActivityDates,
+                                            activities = configBySettings.activities,
+                                            statusLevels = configBySettings.status_levels,
+                                            onActivityClick = { mainViewModel.recordActivity(it) },
+                                            onSettingsClick = { currentScreen = "settings" },
+                                            onStatsClick = { 
+                                                statsViewModel.refreshHistory()
+                                                currentScreen = "stats" 
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -833,5 +845,77 @@ fun ScoreChart(
                 center = point
             )
         }
+    }
+}
+
+@Composable
+fun VideoIntroScreen(
+    legionNumber: String?,
+    legionName: String?,
+    onFinish: () -> Unit
+) {
+    if (legionNumber == null || legionName == null) {
+        LaunchedEffect(Unit) { onFinish() }
+        return
+    }
+
+    val context = LocalContext.current
+    
+    val normalizedName = legionName.lowercase(Locale.ROOT)
+        .replace("'", "")
+        .replace(" ", "_")
+        
+    val videoResName = "video_${legionNumber}_${normalizedName}_primarque"
+    val videoResId = context.resources.getIdentifier(videoResName, "raw", context.packageName)
+
+    if (videoResId == 0) {
+        LaunchedEffect(Unit) { onFinish() }
+        return
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable { onFinish() }
+            .background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { ctx ->
+                android.widget.VideoView(ctx).apply {
+                    setVideoURI(android.net.Uri.parse("android.resource://${ctx.packageName}/$videoResId"))
+                    
+                    setOnPreparedListener { mp ->
+                        val videoWidth = mp.videoWidth.toFloat()
+                        val videoHeight = mp.videoHeight.toFloat()
+                        val viewWidth = width.toFloat()
+                        val viewHeight = height.toFloat()
+                        
+                        if (videoWidth > 0 && videoHeight > 0 && viewWidth > 0 && viewHeight > 0) {
+                            val videoRatio = videoWidth / videoHeight
+                            val viewRatio = viewWidth / viewHeight
+                            
+                            val scale = if (videoRatio > viewRatio) {
+                                videoRatio / viewRatio
+                            } else {
+                                viewRatio / videoRatio
+                            }
+                            scaleX = scale
+                            scaleY = scale
+                        }
+                    }
+                    
+                    setOnCompletionListener {
+                        onFinish()
+                    }
+                    setOnErrorListener { _, _, _ ->
+                        onFinish()
+                        true
+                    }
+                    start()
+                }
+            }
+        )
     }
 }
