@@ -52,7 +52,9 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
             activities = activitiesConfig.activities,
             levels = levelsConfig.levels,
             status_levels = parametersConfig.status_levels,
-            widget_progression_thresholds = parametersConfig.widget_progression_thresholds
+            widget_progression_thresholds = parametersConfig.widget_progression_thresholds,
+            llm_api_key = activitiesConfig.llm_api_key,
+            coach_notification_time = parametersConfig.coach_notification_time
         )
     }
 
@@ -64,7 +66,8 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
                 val oldConfig = json.decodeFromString<GameConfig>(oldConfigString)
                 val newActivities = ActivitiesConfig(
                     daily_decay_points = oldConfig.daily_decay_points,
-                    activities = oldConfig.activities
+                    activities = oldConfig.activities,
+                    llm_api_key = oldConfig.llm_api_key
                 )
                 val newActivitiesString = json.encodeToString(ActivitiesConfig.serializer(), newActivities)
                 context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
@@ -88,7 +91,8 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
     suspend fun saveConfig(newConfig: GameConfig) = withContext(Dispatchers.IO) {
         val activitiesConfig = ActivitiesConfig(
             daily_decay_points = newConfig.daily_decay_points,
-            activities = newConfig.activities
+            activities = newConfig.activities,
+            llm_api_key = newConfig.llm_api_key
         )
         val configString = json.encodeToString(ActivitiesConfig.serializer(), activitiesConfig)
         context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
@@ -169,6 +173,10 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
     suspend fun getRecentScoreHistory(): List<ScoreHistory> = withContext(Dispatchers.IO) {
         val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
         dao.getScoreHistory(thirtyDaysAgo)
+    }
+
+    suspend fun getRecentActivityLogs(): List<ActivityLog> = withContext(Dispatchers.IO) {
+        dao.getAllLogs().filter { it.timestamp >= System.currentTimeMillis() - (7L * 24 * 60 * 60 * 1000) }
     }
 
     suspend fun getScoreAtTimestamp(timestamp: Long): Int = withContext(Dispatchers.IO) {

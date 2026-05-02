@@ -6,7 +6,12 @@
       "image": "wp_01_dark_angels_niveau1.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Scout",
@@ -14,7 +19,12 @@
       "image": "wp_01_dark_angels_niveau2.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Frère de bataille",
@@ -22,7 +32,12 @@
       "image": "wp_01_dark_angels_niveau3.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Sergent",
@@ -30,7 +45,12 @@
       "image": "wp_01_dark_angels_niveau4.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Vétéran",
@@ -38,7 +58,12 @@
       "image": "wp_01_dark_angels_niveau5.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Capitaine",
@@ -46,7 +71,12 @@
       "image": "wp_01_dark_angels_niveau6.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Maitre de Chapitre",
@@ -54,7 +84,12 @@
       "image": "wp_01_dark_angels_niveau7.png",
       "legion_number": "01",
       "legion_name": "Dark Angels",
-      "legion_insignia": "insigne_01_dark_angels.png"
+      "legion_insignia": "insigne_01_dark_angels.png",
+      "primarch": {
+        "name": "Lion El'Jonson",
+        "portrait_square": "prim_01_dark_angels_primarque_square.png",
+        "portrait_vertical": "prim_01_dark_angels_primarque_vertical.png"
+      }
     },
     {
       "name": "Aspirant",
@@ -62,7 +97,12 @@
       "image": "wp_03_emperors_children_niveau1.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Scout",
@@ -70,7 +110,12 @@
       "image": "wp_03_emperors_children_niveau2.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Frère de bataille",
@@ -78,7 +123,12 @@
       "image": "wp_03_emperors_children_niveau3.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Sergent",
@@ -86,7 +136,12 @@
       "image": "wp_03_emperors_children_niveau4.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Vétéran",
@@ -94,7 +149,12 @@
       "image": "wp_03_emperors_children_niveau5.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Capitaine",
@@ -102,7 +162,12 @@
       "image": "wp_03_emperors_children_niveau6.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     },
     {
       "name": "Maitre de Chapitre",
@@ -110,7 +175,12 @@
       "image": "wp_03_emperors_children_niveau7.png",
       "legion_number": "03",
       "legion_name": "Emperor's Children",
-      "legion_insignia": "insigne_03_emperors_children.png"
+      "legion_insignia": "insigne_03_emperors_children.png",
+      "primarch": {
+        "name": "Fulgrim",
+        "portrait_square": "prim_03_emperors_children_primarque_square.png",
+        "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
+      }
     }
   ]
 }

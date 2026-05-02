@@ -12,6 +12,7 @@ M2MM est une application Android de suivi d'activités entièrement gamifiée. E
     *   Actions directes : de larges boutons interactifs (60dp) permettent d'enregistrer des activités en un clin d'œil, sans devoir ouvrir l'application.
     *   Mise à jour fiable : utilisation de callbacks personnalisés et de délais temporels pour assurer une synchronisation transparente entre la base de données et l'affichage de l'écran d'accueil.
 *   **Historique et Statistiques** : Suivez la tendance de votre score sur les 30 derniers jours à l'aide d'un graphique interactif élaboré sur mesure.
+*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM (via API Google AI Studio / Gemma) pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. Le Coach analyse vos activités récentes, votre niveau et incarne le "Primarque" de votre niveau actuel pour vous encourager ou vous recadrer.
 *   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par des fichiers JSON (`activities.json`, `levels.json`, `parameters.json`). Il est aisé de basculer d'un thème à l'autre (ex: passage d'un thème *Dragon Ball* à *Warhammer 40k*).
 *   **Malus Journalier (Daily Decay)** : Un système de "dégradation" soustrait automatiquement des points au score chaque jour, afin d'encourager la régularité.
 
@@ -22,7 +23,8 @@ L'application est construite selon les standards avancés du développement Andr
 *   **Interface Graphique** : Jetpack Compose & Material Design 3.
 *   **Architecture** : MVVM (Model-View-ViewModel) et principes de flux de données unidirectionnels (StateFlow).
 *   **Persistance Locale** : Base de données SQLite gérée par la bibliothèque *Room Persistence Library*.
-*   **Asynchronisme & Concurrence** : Kotlin Coroutines pour les appels réseaux, écritures disque et traitements graphiques en arrière-plan.
+*   **Asynchronisme & Concurrence** : Kotlin Coroutines pour les appels réseaux (API LLM), écritures disque et traitements graphiques.
+*   **Tâches en Arrière-Plan** : Utilisation d'`Android WorkManager` pour la planification robuste des notifications quotidiennes du Coach.
 *   **Widget** : API Jetpack Glance (dédiée à l'architecture App Widgets avec Compose).
 *   **Sérialisation** : `kotlinx.serialization` pour le traitement efficace du fichier JSON.
 *   **OS APIs** : Intégration avancée du `WallpaperManager` d'Android.
@@ -37,6 +39,9 @@ L'application est construite selon les standards avancés du développement Andr
 *   **Espace Widget (`widget/`)** :
     *   `M2MMWidget.kt` : Vue asynchrone du dashboard de l'écran d'accueil.
     *   `RecordActivityAction.kt`, `RefreshSyncAction.kt` : Logique de mise à jour des instances Glance et d'intégration en BDD hors-Contexte.
+*   **Intelligence Artificielle (`worker/` & `data/`)** :
+    *   `LlmRepository.kt` : Client réseau personnalisé, contraignant les requêtes vers Gemini (Prompt Few-Shot & mode JSON strict).
+    *   `CoachWorker.kt` : Tâche de fond construisant dynamiquement la notification Push enrichie (BigPictureStyle/LargeIcon).
 *   `WallpaperHelper.kt` : Classe technique gérant l'extraction des DisplayMetrics du terminal pour appliquer des transformations Bitmap spécifiques afin de bloquer les rendus de parallaxe non voulus d'Android.
 *   `WidgetRefreshHelper.kt` : Gestionnaire de processus de rafraichissement forcé.
 

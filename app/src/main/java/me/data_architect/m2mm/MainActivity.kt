@@ -68,6 +68,14 @@ class MainActivity : ComponentActivity() {
                 
                 var currentScreen by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("main") }
 
+                val context = androidx.compose.ui.platform.LocalContext.current
+                LaunchedEffect(configBySettings.coach_notification_time) {
+                    me.data_architect.m2mm.worker.CoachWorker.scheduleDailyCoachNotification(
+                        context,
+                        configBySettings.coach_notification_time
+                    )
+                }
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     when (currentScreen) {
                         "main" -> {
@@ -112,6 +120,13 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onDailyDecayChange = { value ->
                                     settingsViewModel.updateDailyDecay(value)
+                                },
+                                onLlmApiKeyChange = { value ->
+                                    settingsViewModel.updateLlmApiKey(value)
+                                },
+                                onTestCoachClick = { 
+                                    settingsViewModel.saveConfig()
+                                    currentScreen = "test_coach" 
                                 }
                             )
                         }
@@ -119,6 +134,13 @@ class MainActivity : ComponentActivity() {
                             StatsScreen(
                                 scoreHistory = scoreHistory,
                                 onBack = { currentScreen = "main" }
+                            )
+                        }
+                        "test_coach" -> {
+                            me.data_architect.m2mm.ui.TestCoachScreen(
+                                apiKey = configBySettings.llm_api_key,
+                                allActivities = configBySettings.activities.map { it.name },
+                                onBack = { currentScreen = "settings" }
                             )
                         }
                     }
@@ -343,7 +365,9 @@ fun SettingsScreen(
     onThresholdChange: (String, String, Int) -> Unit,
     onPointsChange: (String, Int) -> Unit,
     onWidgetVisibilityChange: (String, Boolean) -> Unit,
-    onDailyDecayChange: (Int) -> Unit
+    onDailyDecayChange: (Int) -> Unit,
+    onLlmApiKeyChange: (String) -> Unit,
+    onTestCoachClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -399,6 +423,36 @@ fun SettingsScreen(
                             )
                         )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text("Clé API LLM Cloud (Gemma)", fontWeight = FontWeight.SemiBold)
+                        Text("Sera utilisée pour l'étape 2", style = MaterialTheme.typography.bodySmall)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        OutlinedTextField(
+                            value = config.llm_api_key,
+                            onValueChange = { newVal ->
+                                onLlmApiKeyChange(newVal)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(
+                    onClick = onTestCoachClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Outils de développement (Coach Primarque)")
                 }
             }
 

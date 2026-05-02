@@ -5,10 +5,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GameConfig(
     val daily_decay_points: Int,
-    val levels: List<LevelConfig>,
     val activities: List<ActivityConfig>,
+    val levels: List<LevelConfig>,
     val status_levels: Map<String, List<StatusLevel>>,
-    val widget_progression_thresholds: Map<String, Int> = emptyMap()
+    val widget_progression_thresholds: Map<String, Int> = emptyMap(),
+    val llm_api_key: String = "",
+    val coach_notification_time: String = "22:00"
 )
 
 @Serializable
@@ -18,7 +20,15 @@ data class LevelConfig(
     val image: String,
     val legion_number: String? = null,
     val legion_name: String? = null,
-    val legion_insignia: String? = null
+    val legion_insignia: String? = null,
+    val primarch: PrimarchConfig? = null
+)
+
+@Serializable
+data class PrimarchConfig(
+    val name: String,
+    val portrait_square: String,
+    val portrait_vertical: String
 )
 
 @Serializable
@@ -44,7 +54,8 @@ data class StatusLevel(
 @Serializable
 data class ActivitiesConfig(
     val daily_decay_points: Int,
-    val activities: List<ActivityConfig>
+    val activities: List<ActivityConfig>,
+    val llm_api_key: String = ""
 )
 
 @Serializable
@@ -55,5 +66,6 @@ data class LevelsConfig(
 @Serializable
 data class ParametersConfig(
     val status_levels: Map<String, List<StatusLevel>>,
-    val widget_progression_thresholds: Map<String, Int> = emptyMap()
+    val widget_progression_thresholds: Map<String, Int> = emptyMap(),
+    val coach_notification_time: String = "22:00"
 )

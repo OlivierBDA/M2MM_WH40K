@@ -55,6 +55,10 @@ class SettingsViewModel(private val repository: GameRepository) : ViewModel() {
         _configState.value = _configState.value.copy(daily_decay_points = newValue)
     }
 
+    fun updateLlmApiKey(newValue: String) {
+        _configState.value = _configState.value.copy(llm_api_key = newValue)
+    }
+
     fun saveConfig() {
         viewModelScope.launch {
             repository.saveConfig(_configState.value)
