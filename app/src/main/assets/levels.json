@@ -181,6 +181,188 @@
         "portrait_square": "prim_03_emperors_children_primarque_square.png",
         "portrait_vertical": "prim_03_emperors_children_primarque_vertical.png"
       }
+    },
+    {
+      "name": "Aspirant",
+      "threshold": 7000,
+      "image": "wp_04_iron_warriors_niveau1.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Scout",
+      "threshold": 7500,
+      "image": "wp_04_iron_warriors_niveau2.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Frère de Bataille",
+      "threshold": 8000,
+      "image": "wp_04_iron_warriors_niveau3.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Sergent",
+      "threshold": 8500,
+      "image": "wp_04_iron_warriors_niveau4.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Vétéran",
+      "threshold": 9000,
+      "image": "wp_04_iron_warriors_niveau5.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Warsmith (Capitaine)",
+      "threshold": 9500,
+      "image": "wp_04_iron_warriors_niveau6.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Maître de Forge",
+      "threshold": 10000,
+      "image": "wp_04_iron_warriors_niveau7.png",
+      "legion_number": "04",
+      "legion_name": "Iron Warriors",
+      "legion_insignia": "insigne_04_iron_warriors.png",
+      "primarch": {
+        "name": "Perturabo",
+        "portrait_square": "prim_04_iron_warriors_primarque_square.png",
+        "portrait_vertical": "prim_04_iron_warriors_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Aspirant",
+      "threshold": 10500,
+      "image": "wp_05_white_scars_niveau1.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Scout",
+      "threshold": 11000,
+      "image": "wp_05_white_scars_niveau2.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Frère de Bataille",
+      "threshold": 11500,
+      "image": "wp_05_white_scars_niveau3.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Sergent",
+      "threshold": 12000,
+      "image": "wp_05_white_scars_niveau4.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Vétéran",
+      "threshold": 12500,
+      "image": "wp_05_white_scars_niveau5.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Khan (Capitaine)",
+      "threshold": 13000,
+      "image": "wp_05_white_scars_niveau6.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
+    },
+    {
+      "name": "Grand Khan",
+      "threshold": 13500,
+      "image": "wp_05_white_scars_niveau7.png",
+      "legion_number": "05",
+      "legion_name": "White Scars",
+      "legion_insignia": "insigne_05_white_scars.png",
+      "primarch": {
+        "name": "Jaghatai Khan",
+        "portrait_square": "prim_05_white_scars_primarque_square.png",
+        "portrait_vertical": "prim_05_white_scars_primarque_vertical.png"
+      }
     }
   ]
 }
