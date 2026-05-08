@@ -21,13 +21,16 @@ import androidx.work.WorkManager
 import me.data_architect.m2mm.worker.CoachWorker
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.launch
-import me.data_architect.m2mm.data.LlmRepository
+import me.data_architect.m2mm.data.CloudLlmService
+import me.data_architect.m2mm.data.LocalLlmService
+import me.data_architect.m2mm.data.LlmService
 import me.data_architect.m2mm.data.GameContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestCoachScreen(
     apiKey: String,
+    useLocalLlm: Boolean,
     allActivities: List<String>,
     onBack: () -> Unit
 ) {
@@ -143,7 +146,11 @@ fun TestCoachScreen(
                                 llmPrompt = null
                                 llmResponse = null
                                 coroutineScope.launch {
-                                    val repository = LlmRepository(apiKey)
+                                    val service: LlmService = if (useLocalLlm) {
+                                        LocalLlmService(context)
+                                    } else {
+                                        CloudLlmService(apiKey)
+                                    }
                                     val dummyContext = GameContext(
                                         primarchName = "Lion El'Jonson",
                                         legionName = "Dark Angels",
@@ -155,7 +162,7 @@ fun TestCoachScreen(
                                         recentActivitiesMissed = listOf("Malus de points"),
                                         allAvailableActivities = allActivities
                                     )
-                                    val result = repository.generateEncouragementDynamic(dummyContext)
+                                    val result = service.generateEncouragementDynamic(dummyContext)
                                     isLlmLoading = false
                                     if (result.isSuccess) {
                                         val res = result.getOrThrow()

@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId = "me.data_architect.m2mm"
-        minSdk = 24
+        minSdk = 31
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         compose = true
+        resValues = true
     }
 }
 
@@ -65,6 +66,9 @@ dependencies {
 
     // WorkManager for background tasks
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+    
+    // Google AICore for Local LLM
+    implementation("com.google.ai.edge.aicore:aicore:0.0.1-exp02")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

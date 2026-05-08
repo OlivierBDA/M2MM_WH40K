@@ -44,6 +44,10 @@ L'interface est réalisée avec **Jetpack Compose** (Material 3), offrant un des
     *   Affiche un graphique d'évolution du score sur les 30 derniers jours.
     *   Le graphique est réalisé sur mesure via `Canvas`, affichant le dernier score connu pour chaque journée.
 
+*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. L'application supporte une **architecture hybride** : via l'API Google Cloud (Gemini) ou via une exécution 100% On-Device (Gemma 4 Nano) via l'API Android Edge AICore.
+*   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par des fichiers JSON (`activities.json`, `levels.json`, `parameters.json`).
+*   **Malus Journalier (Daily Decay)** : Un système de "dégradation" soustrait automatiquement des points au score chaque jour, afin d'encourager la régularité.
+
 *   **Écran de Configuration (SettingsScreen) :**
     *   Design moderne à base de cartes extensibles ("Accordion").
     *   Permet d'éditer le malus journalier, les points attribués par activité, et les seuils de régularité.
@@ -76,6 +80,12 @@ Le code est structuré dans le package `me.data_architect.m2mm` :
     *   `GameRepository.kt` : Orchestre l'accès aux données et la logique métier (calculs, decay, history).
     *   `M2MMDatabase.kt` & `M2MMDao.kt` : Persistance Room.
     *   `GameState.kt`, `ActivityLog.kt`, `ScoreHistory.kt` : Entités de la base de données.
+
+3.  **Intelligence Artificielle (`data/` & `worker/`) :**
+    *   `LlmService.kt` : Interface Strategy commune définissant le contrat de génération.
+    *   `CloudLlmService.kt` : Implémentation réseau (HTTP/JSON) vers Gemini 4 via Google AI Studio.
+    *   `LocalLlmService.kt` : Implémentation locale via le SDK Early Access `com.google.ai.edge.aicore`. L'instanciation contourne les documentations obsolètes en s'appuyant sur l'injection directe d'un `GenerationConfig` via builder dans la classe `GenerativeModel("gemini-nano")`.
+    *   `CoachWorker.kt` : WorkManager exécuté quotidiennement à 22h, capable de basculer dynamiquement sur le service Cloud ou Local selon la configuration de l'utilisateur.
 
 ### 2.3. Gestion de la Persistance des Données
 

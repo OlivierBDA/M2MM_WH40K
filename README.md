@@ -13,7 +13,7 @@ M2MM est une application Android de suivi d'activités entièrement gamifiée. E
     *   Mise à jour fiable : utilisation de callbacks personnalisés et de délais temporels pour assurer une synchronisation transparente entre la base de données et l'affichage de l'écran d'accueil.
 *   **Historique et Statistiques** : Suivez la tendance de votre score sur les 30 derniers jours à l'aide d'un graphique interactif élaboré sur mesure.
 *   **Intro Vidéo du Primarque** : Au démarrage de l'application, une courte vidéo d'encouragement est jouée automatiquement en plein écran (mode *CenterCrop*). Le fichier est lu dynamiquement en fonction du primarque et de la légion en cours. Un simple "tap" permet de passer la vidéo.
-*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM (via API Google AI Studio / Gemma) pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. Le Coach analyse vos activités récentes, votre niveau et incarne le "Primarque" de votre niveau actuel pour vous encourager ou vous recadrer.
+*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. Le Coach incarne le "Primarque" de votre niveau actuel. L'application possède une **Architecture Hybride IA** : elle peut fonctionner via l'API Cloud (Google AI Studio) ou fonctionner de manière 100% hors-ligne en s'appuyant sur le TPU de votre appareil (*Google AI Edge AICore* / modèle Gemma 4 Nano local) pour une confidentialité totale.
 *   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par des fichiers JSON (`activities.json`, `levels.json`, `parameters.json`). Il est aisé de basculer d'un thème à l'autre (ex: passage d'un thème *Dragon Ball* à *Warhammer 40k*).
 *   **Malus Journalier (Daily Decay)** : Un système de "dégradation" soustrait automatiquement des points au score chaque jour, afin d'encourager la régularité.
 
@@ -41,7 +41,9 @@ L'application est construite selon les standards avancés du développement Andr
     *   `M2MMWidget.kt` : Vue asynchrone du dashboard de l'écran d'accueil.
     *   `RecordActivityAction.kt`, `RefreshSyncAction.kt` : Logique de mise à jour des instances Glance et d'intégration en BDD hors-Contexte.
 *   **Intelligence Artificielle (`worker/` & `data/`)** :
-    *   `LlmRepository.kt` : Client réseau personnalisé, contraignant les requêtes vers Gemini (Prompt Few-Shot & mode JSON strict).
+    *   `LlmService.kt` : Interface Strategy pour l'injection du modèle d'IA.
+    *   `CloudLlmService.kt` : Implémentation via appels API réseau vers Gemini.
+    *   `LocalLlmService.kt` : Implémentation via l'API native Android `AICore` (Modèle embarqué On-Device).
     *   `CoachWorker.kt` : Tâche de fond construisant dynamiquement la notification Push enrichie (BigPictureStyle/LargeIcon).
 *   `WallpaperHelper.kt` : Classe technique gérant l'extraction des DisplayMetrics du terminal pour appliquer des transformations Bitmap spécifiques afin de bloquer les rendus de parallaxe non voulus d'Android.
 *   `WidgetRefreshHelper.kt` : Gestionnaire de processus de rafraichissement forcé.

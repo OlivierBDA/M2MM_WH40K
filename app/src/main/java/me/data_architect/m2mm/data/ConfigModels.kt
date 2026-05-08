@@ -10,6 +10,7 @@ data class GameConfig(
     val status_levels: Map<String, List<StatusLevel>>,
     val widget_progression_thresholds: Map<String, Int> = emptyMap(),
     val llm_api_key: String = "",
+    val use_local_llm: Boolean = false,
     val coach_notification_time: String = "22:00"
 )
 
@@ -55,7 +56,8 @@ data class StatusLevel(
 data class ActivitiesConfig(
     val daily_decay_points: Int,
     val activities: List<ActivityConfig>,
-    val llm_api_key: String = ""
+    val llm_api_key: String = "",
+    val use_local_llm: Boolean = false
 )
 
 @Serializable

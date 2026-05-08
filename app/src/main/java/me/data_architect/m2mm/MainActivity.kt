@@ -136,6 +136,9 @@ class MainActivity : ComponentActivity() {
                                 onLlmApiKeyChange = { value ->
                                     settingsViewModel.updateLlmApiKey(value)
                                 },
+                                onUseLocalLlmChange = { value ->
+                                    settingsViewModel.updateUseLocalLlm(value)
+                                },
                                 onTestCoachClick = { 
                                     settingsViewModel.saveConfig()
                                     currentScreen = "test_coach" 
@@ -151,6 +154,7 @@ class MainActivity : ComponentActivity() {
                         "test_coach" -> {
                             me.data_architect.m2mm.ui.TestCoachScreen(
                                 apiKey = configBySettings.llm_api_key,
+                                useLocalLlm = configBySettings.use_local_llm,
                                 allActivities = configBySettings.activities.map { it.name },
                                 onBack = { currentScreen = "settings" }
                             )
@@ -379,6 +383,7 @@ fun SettingsScreen(
     onWidgetVisibilityChange: (String, Boolean) -> Unit,
     onDailyDecayChange: (Int) -> Unit,
     onLlmApiKeyChange: (String) -> Unit,
+    onUseLocalLlmChange: (Boolean) -> Unit,
     onTestCoachClick: () -> Unit
 ) {
     Scaffold(
@@ -455,6 +460,26 @@ fun SettingsScreen(
                             },
                             modifier = Modifier.fillMaxWidth(),
                             singleLine = true
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Utiliser l'IA Locale (AICore)", fontWeight = FontWeight.SemiBold)
+                            Text("Gemma 4 Nano sur le téléphone", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Switch(
+                            checked = config.use_local_llm,
+                            onCheckedChange = { onUseLocalLlmChange(it) }
                         )
                     }
                 }

@@ -8,7 +8,7 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
-class LlmRepository(private val apiKey: String) {
+class CloudLlmService(private val apiKey: String) : LlmService {
 
     // Utilisation du modèle Gemma 4 26B A4B IT officiel
     private val modelName = "gemma-4-26b-a4b-it"
@@ -74,7 +74,7 @@ class LlmRepository(private val apiKey: String) {
         }
     }
 
-    suspend fun generateEncouragementDynamic(context: GameContext): Result<LlmResult> = withContext(Dispatchers.IO) {
+    override suspend fun generateEncouragementDynamic(context: GameContext): Result<LlmResult> = withContext(Dispatchers.IO) {
         if (apiKey.isBlank()) {
             return@withContext Result.failure(Exception("La clé API n'est pas configurée dans les paramètres."))
         }

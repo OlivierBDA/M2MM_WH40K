@@ -17,7 +17,9 @@ import kotlinx.coroutines.withContext
 import me.data_architect.m2mm.R
 import me.data_architect.m2mm.data.GameContext
 import me.data_architect.m2mm.data.GameRepository
-import me.data_architect.m2mm.data.LlmRepository
+import me.data_architect.m2mm.data.CloudLlmService
+import me.data_architect.m2mm.data.LocalLlmService
+import me.data_architect.m2mm.data.LlmService
 import me.data_architect.m2mm.data.M2MMDatabase
 
 class CoachWorker(
@@ -32,14 +34,19 @@ class CoachWorker(
             val repository = GameRepository(context, database.dao())
             val config = repository.config()
             
-            // Abort if no API key
-            val apiKey = config.llm_api_key
-            if (apiKey.isNullOrEmpty()) {
-                android.util.Log.e("CoachWorker", "API Key is missing!")
-                return@withContext Result.failure()
+            val llmService: LlmService = if (config.use_local_llm) {
+                android.util.Log.d("CoachWorker", "Using Local LLM (AICore)")
+                LocalLlmService(context)
+            } else {
+                val apiKey = config.llm_api_key
+                if (apiKey.isNullOrEmpty()) {
+                    android.util.Log.e("CoachWorker", "API Key is missing for Cloud LLM!")
+                    return@withContext Result.failure()
+                }
+                android.util.Log.d("CoachWorker", "Using Cloud LLM")
+                CloudLlmService(apiKey)
             }
             
-            val llmRepository = LlmRepository(apiKey)
             val levelDetails = repository.getLevelDetails()
             val currentScore = levelDetails.score
             
@@ -65,7 +72,7 @@ class CoachWorker(
             
             android.util.Log.d("CoachWorker", "GameContext created: $gameContext")
             
-            val llmResult = llmRepository.generateEncouragementDynamic(gameContext)
+            val llmResult = llmService.generateEncouragementDynamic(gameContext)
             if (llmResult.isFailure) {
                 android.util.Log.e("CoachWorker", "LLM API Call failed: ${llmResult.exceptionOrNull()?.message}")
             }
