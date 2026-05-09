@@ -2,6 +2,7 @@ package me.data_architect.m2mm.data
 
 import android.content.Context
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
@@ -100,6 +101,34 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
         val configString = json.encodeToString(ActivitiesConfig.serializer(), activitiesConfig)
         context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
             output.write(configString.toByteArray())
+        }
+    }
+
+    private val coachHistoryFile = context.getFileStreamPath("coach_history.json")
+
+    suspend fun getCoachHistory(): List<String> = withContext(Dispatchers.IO) {
+        try {
+            if (coachHistoryFile.exists()) {
+                val jsonString = coachHistoryFile.bufferedReader().use { it.readText() }
+                json.decodeFromString<List<String>>(jsonString)
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun addCoachHistory(message: String) = withContext(Dispatchers.IO) {
+        val currentHistory = getCoachHistory().toMutableList()
+        currentHistory.add(message)
+        // Ne conserver que les 7 dernières phrases
+        while (currentHistory.size > 7) {
+            currentHistory.removeAt(0)
+        }
+        val jsonString = json.encodeToString(currentHistory)
+        context.openFileOutput("coach_history.json", Context.MODE_PRIVATE).use { output ->
+            output.write(jsonString.toByteArray())
         }
     }
 

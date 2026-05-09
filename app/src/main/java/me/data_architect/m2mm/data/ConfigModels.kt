@@ -71,3 +71,25 @@ data class ParametersConfig(
     val widget_progression_thresholds: Map<String, Int> = emptyMap(),
     val coach_notification_time: String = "22:00"
 )
+
+fun determineStatus(daysSince: Int, activity: ActivityConfig, statusPalette: List<StatusLevel>): StatusLevel? {
+    if (statusPalette.isEmpty()) return null
+    
+    if (activity.type == "good") {
+        for (level in statusPalette) {
+            val threshold = activity.day_thresholds[level.label]
+            if (threshold != null && daysSince <= threshold) return level
+        }
+        return statusPalette.last()
+    } else if (activity.type == "bad") {
+        var bestLevel = statusPalette.first()
+        for (level in statusPalette) {
+            val threshold = activity.day_thresholds[level.label]
+            if (threshold != null && daysSince >= threshold) {
+                bestLevel = level
+            }
+        }
+        return bestLevel
+    }
+    return null
+}

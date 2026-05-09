@@ -696,28 +696,6 @@ fun ActivityButton(
     }
 }
 
-fun determineStatus(daysSince: Int, activity: ActivityConfig, statusPalette: List<StatusLevel>): StatusLevel? {
-    if (statusPalette.isEmpty()) return null
-    
-    if (activity.type == "good") {
-        for (level in statusPalette) {
-            val threshold = activity.day_thresholds[level.label]
-            if (threshold != null && daysSince <= threshold) return level
-        }
-        return statusPalette.last()
-    } else if (activity.type == "bad") {
-        var bestLevel = statusPalette.first()
-        for (level in statusPalette) {
-            val threshold = activity.day_thresholds[level.label]
-            if (threshold != null && daysSince >= threshold) {
-                bestLevel = level
-            }
-        }
-        return bestLevel
-    }
-    return null
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(

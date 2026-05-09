@@ -44,7 +44,7 @@ L'interface est réalisée avec **Jetpack Compose** (Material 3), offrant un des
     *   Affiche un graphique d'évolution du score sur les 30 derniers jours.
     *   Le graphique est réalisé sur mesure via `Canvas`, affichant le dernier score connu pour chaque journée.
 
-*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. L'application supporte une **architecture hybride** : via l'API Google Cloud (Gemini) ou via une exécution 100% On-Device (Gemma 4 Nano) via l'API Android Edge AICore.
+*   **Coach Primarque (IA)** : Intégration avancée avec les modèles LLM pour vous envoyer quotidiennement une notification de motivation ultra-personnalisée. L'application supporte une **architecture hybride** : via l'API Google Cloud (Gemini) ou via une exécution 100% On-Device (Gemma 4 Nano) via l'API Android Edge AICore. Le prompt généré dynamiquement agrège le statut complet du joueur (fréquence et régularité des activités sur les 7 derniers jours) et intègre un historique JSON des 7 dernières phrases d'encouragement afin d'empêcher toute répétition par le LLM.
 *   **Configuration et Thèmes Dynamiques (JSON)** : L'application est agnostique de son thème. Toutes les données (activités, points, icônes, images de fond, seuils des niveaux) sont pilotées par des fichiers JSON (`activities.json`, `levels.json`, `parameters.json`).
 *   **Malus Journalier (Daily Decay)** : Un système de "dégradation" soustrait automatiquement des points au score chaque jour, afin d'encourager la régularité.
 
@@ -95,6 +95,7 @@ Le code est structuré dans le package `me.data_architect.m2mm` :
     *   `score_history` : Évolution temporelle du score pour les graphiques.
 *   **Stockage Interne** :
     *   `user_config.json` : Configuration personnalisée de l'utilisateur.
+    *   `coach_history.json` : Historique circulaire (FIFO) des 7 dernières phrases générées par l'IA.
 
 ## 3. Processus de Développement et Déploiement
 

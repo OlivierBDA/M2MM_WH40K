@@ -89,48 +89,9 @@ class CloudLlmService(private val apiKey: String) : LlmService {
             connection.setRequestProperty("Content-Type", "application/json")
             connection.doOutput = true
 
-            val systemInstructionText = """
-                Tu es le Primarque ${context.primarchName} de la légion ${context.legionName}.
-                Tu es un coach de motivation personnel impitoyable mais juste, inspirant et charismatique.
-                Ton objectif est d'encourager le joueur.
-                
-                RÈGLES ABSOLUES :
-                1. TU DOIS RÉPONDRE EXCLUSIVEMENT AU FORMAT JSON.
-                2. LE JSON DOIT CONTENIR EXACTEMENT DEUX CLÉS : 'reasoning' (pour tes réflexions) et 'answer' (pour la phrase finale).
-                3. TA PHRASE DANS 'answer' DOIT ÊTRE UNE SEULE ET UNIQUE PHRASE, COURTE POUR RENTRER DANS UNE NOTIFICATION PUSH ANDROID.
-                4. UTILISE LE TON DE TON PERSONNAGE (Primarque ${context.legionName}) DANS 'answer'.
-                
-                Voici les différents niveaux que peux atteindre le joueur (du plus faible au plus puissant), le passage de niveau se fait tous les 500 points : 
-                - Aspirant
-                - Scout
-                - Frère de bataille
-                - Sergent
-                - Vétéran
-                - Capitaine
-                - Maitre de Chapitre
-
-                Voici la liste des activités que le joueur peut faire (pour comparaison) :
-                ${context.allAvailableActivities.joinToString(", ")}
-
-                EXEMPLES DE RÉPONSES ATTENDUES (FORMAT JSON STRICT) :
-                { "reasoning": "Le joueur a un bon score, je le félicite.", "answer": "Frère, ta discipline honore la Légion, continue cette progression implacable !" }
-                { "reasoning": "Le joueur a un malus, je dois être strict.", "answer": "Un Primarque n'accepte pas la faiblesse, purge ce malus par l'effort et relève-toi immédiatement." }
-                { "reasoning": "Le joueur stagne, je dois le pousser à l'action.", "answer": "L'entraînement est l'essence de notre survie, remplace cette stagnation par des Pompes dès aujourd'hui." }
-            """.trimIndent()
-
-            val userPrompt = """
-                Voici les informations sur le joueur :
-                
-                * Légion : ${context.legionName}
-                * Primarque : ${context.primarchName}
-                * Niveau : ${context.currentLevel}
-                * Score actuel : ${context.currentScore}
-                * Points avant le prochain rang : ${context.pointsToNextLevel}
-                * Points de la semaine (progression 7j) : ${if (context.currentScore - context.score7DaysAgo >= 0) "+" else ""}${context.currentScore - context.score7DaysAgo}
-                * Activités des 7 derniers jours : ${if (context.recentActivitiesDone.isEmpty()) "Aucune" else context.recentActivitiesDone.joinToString(", ")}
-
-                Génère ton encouragement (UNE SEULE PHRASE).
-            """.trimIndent()
+            val prompts = buildLlmPrompts(context)
+            val systemInstructionText = prompts.first
+            val userPrompt = prompts.second
             
             // Build the JSON payload for Gemini API with systemInstruction
             val payload = JSONObject().apply {
@@ -172,6 +133,8 @@ class CloudLlmService(private val apiKey: String) : LlmService {
                 })
             }
 
+            android.util.Log.d("LlmRepository", "Sending combined prompt:\n$systemInstructionText\n\n$userPrompt")
+
             connection.outputStream.use { os ->
                 val input = payload.toString().toByteArray(Charsets.UTF_8)
                 os.write(input, 0, input.size)
@@ -211,15 +174,18 @@ class CloudLlmService(private val apiKey: String) : LlmService {
                     finalAnswer
                 }
                 
-                Result.success(LlmResult(userPrompt, formattedResponse))
+                val combinedPrompt = "$systemInstructionText\n\n$userPrompt"
+                Result.success(LlmResult(combinedPrompt, formattedResponse))
             } else {
                 val errorStream = connection.errorStream
                 val errorMessage = errorStream?.let { 
                     BufferedReader(InputStreamReader(it)).use { reader -> reader.readText() }
                 } ?: "Erreur HTTP $responseCode"
+                android.util.Log.e("LlmRepository", "API Error HTTP $responseCode: $errorMessage")
                 Result.failure(Exception("Erreur API : $errorMessage"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("LlmRepository", "Exception during API call: ${e.message}", e)
             e.printStackTrace()
             Result.failure(e)
         }
@@ -238,7 +204,39 @@ data class GameContext(
     val currentLevel: String,
     val pointsToNextLevel: Int,
     val score7DaysAgo: Int,
-    val recentActivitiesDone: List<String>,
-    val recentActivitiesMissed: List<String>,
-    val allAvailableActivities: List<String>
+    val activitiesDetails: List<String>,
+    val coachHistory: List<String>
 )
+
+fun buildLlmPrompts(context: GameContext): Pair<String, String> {
+    val systemInstructionText = """
+        Tu es le Primarque ${context.primarchName} de la légion ${context.legionName}.
+        Tu es un coach de motivation personnel impitoyable mais juste, inspirant et charismatique.
+        Ton objectif est d'encourager le joueur.
+        
+        RÈGLES ABSOLUES :
+        1. TU DOIS RÉPONDRE EXCLUSIVEMENT AU FORMAT JSON.
+        2. LE JSON DOIT CONTENIR EXACTEMENT DEUX CLÉS : 'reasoning' (pour tes réflexions) et 'answer' (pour la phrase finale).
+        3. TA PHRASE DANS 'answer' DOIT ÊTRE UNE SEULE ET UNIQUE PHRASE, COURTE POUR RENTRER DANS UNE NOTIFICATION PUSH ANDROID.
+        4. UTILISE LE TON DE TON PERSONNAGE (Primarque ${context.primarchName}) DANS 'answer'.
+        5. NE RÉPÈTE SOUS AUCUN PRÉTEXTE L'UNE DES PHRASES SUIVANTES DÉJÀ PRONONCÉES RÉCEMMENT :
+        ${if (context.coachHistory.isEmpty()) "Aucune." else context.coachHistory.joinToString("\n- ", prefix = "- ")}
+    """.trimIndent()
+
+    val userPrompt = """
+        Voici les informations sur le joueur :
+        
+        * Légion : ${context.legionName}
+        * Primarque : ${context.primarchName}
+        * Niveau : ${context.currentLevel}
+        * Score actuel : ${context.currentScore}
+        * Points avant le prochain rang : ${context.pointsToNextLevel}
+        * Points de la semaine (progression 7j) : ${if (context.currentScore - context.score7DaysAgo >= 0) "+" else ""}${context.currentScore - context.score7DaysAgo}
+        * Bilan des activités (nom xNombreDeFois (Statut)) :
+        ${if (context.activitiesDetails.isEmpty()) "- Aucune activité." else context.activitiesDetails.joinToString("\n        - ", prefix = "- ")}
+
+        Analyse le statut des activités. Les activités avec un mauvais statut nécessitent d'être corrigées. Félicite les bons statuts.
+        Génère ton encouragement (UNE SEULE PHRASE) en fonction du bilan.
+    """.trimIndent()
+    return Pair(systemInstructionText, userPrompt)
+}

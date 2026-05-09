@@ -25,7 +25,13 @@ import me.data_architect.m2mm.data.CloudLlmService
 import me.data_architect.m2mm.data.LocalLlmService
 import me.data_architect.m2mm.data.LlmService
 import me.data_architect.m2mm.data.GameContext
-
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.BitmapFactory
+import android.content.Context
+import androidx.core.app.NotificationCompat
+import me.data_architect.m2mm.data.M2MMDatabase
+import me.data_architect.m2mm.data.GameRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestCoachScreen(
@@ -55,6 +61,14 @@ fun TestCoachScreen(
         permissionGranted = isGranted
     }
 
+    val database = remember { M2MMDatabase.getDatabase(context) }
+    val repository = remember { GameRepository(context, database.dao()) }
+    var coachHistory by remember { mutableStateOf<List<String>>(emptyList()) }
+    
+    LaunchedEffect(Unit) {
+        coachHistory = repository.getCoachHistory()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -81,7 +95,7 @@ fun TestCoachScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                "Outils de développement pour tester les différentes étapes de l'intégration du Coach Primarque.",
+                "Outil de test de l'IA (Prompt, Historique & Notification).",
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -97,43 +111,26 @@ fun TestCoachScreen(
                     Text("Autoriser les notifications")
                 }
             }
-
-            ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Étape 1 : Notification de base", fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            val request = OneTimeWorkRequestBuilder<CoachWorker>().build()
-                            WorkManager.getInstance(context).enqueue(request)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = permissionGranted
-                    ) {
-                        Text("Déclencher la notification immédiatement")
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Button(
-                        onClick = {
-                            val request = OneTimeWorkRequestBuilder<CoachWorker>()
-                                .setInitialDelay(1, TimeUnit.MINUTES)
-                                .build()
-                            WorkManager.getInstance(context).enqueue(request)
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        enabled = permissionGranted
-                    ) {
-                        Text("Planifier dans 1 minute")
+            
+            if (coachHistory.isNotEmpty()) {
+                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text("Historique (7 dernières phrases) :", fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        coachHistory.forEach { phrase ->
+                            Text("- $phrase", style = MaterialTheme.typography.bodySmall)
+                            Spacer(modifier = Modifier.height(4.dp))
+                        }
                     }
                 }
             }
 
             ElevatedCard(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Étape 3 : Appel LLM Dynamique", fontWeight = FontWeight.Bold)
+                    Text("Tester l'encouragement", fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    if (apiKey.isBlank()) {
+                    if (!useLocalLlm && apiKey.isBlank()) {
                         Text(
                             "⚠️ Aucune clé API configurée.",
                             color = MaterialTheme.colorScheme.error,
@@ -151,23 +148,58 @@ fun TestCoachScreen(
                                     } else {
                                         CloudLlmService(apiKey)
                                     }
-                                    val dummyContext = GameContext(
-                                        primarchName = "Lion El'Jonson",
-                                        legionName = "Dark Angels",
-                                        currentScore = 1250,
-                                        currentLevel = "Frère de bataille",
-                                        pointsToNextLevel = 250,
-                                        score7DaysAgo = 1100,
-                                        recentActivitiesDone = listOf("Pompes", "Lecture"),
-                                        recentActivitiesMissed = listOf("Malus de points"),
-                                        allAvailableActivities = allActivities
+                                    val levelDetails = repository.getLevelDetails()
+                                    val currentScore = levelDetails.score
+                                    val config = repository.config()
+                                    val sevenDaysAgoTimestamp = System.currentTimeMillis() - (7L * 24 * 60 * 60 * 1000)
+                                    val score7DaysAgo = repository.getScoreAtTimestamp(sevenDaysAgoTimestamp)
+                                    val recentLogs = repository.getRecentActivityLogs()
+                                    val lastActivityDates = repository.getLastActivityDates()
+                                    val now = System.currentTimeMillis()
+                                    
+                                    val activitiesDetails = config.activities.map { activity ->
+                                        val count = recentLogs.count { it.activityId == activity.id }
+                                        val lastTimestamp = lastActivityDates[activity.id]
+                                        val daysSince = if (lastTimestamp != null) {
+                                            ((now - lastTimestamp) / (24L * 60 * 60 * 1000)).toInt()
+                                        } else {
+                                            999
+                                        }
+                                        val statusPalette = config.status_levels[activity.type] ?: emptyList()
+                                        val status = me.data_architect.m2mm.data.determineStatus(daysSince, activity, statusPalette)
+                                        val statusLabel = status?.label ?: "Inconnu"
+                                        "${activity.name} x$count ($statusLabel)"
+                                    }
+                                    
+                                    val currentHistory = repository.getCoachHistory()
+
+                                    val gameContext = GameContext(
+                                        primarchName = levelDetails.currentLevel.primarch?.name ?: "Inconnu",
+                                        legionName = levelDetails.currentLevel.legion_name ?: "Inconnue",
+                                        currentScore = currentScore,
+                                        currentLevel = levelDetails.currentLevel.name,
+                                        pointsToNextLevel = levelDetails.nextLevelThreshold - currentScore,
+                                        score7DaysAgo = score7DaysAgo,
+                                        activitiesDetails = activitiesDetails,
+                                        coachHistory = currentHistory
                                     )
-                                    val result = service.generateEncouragementDynamic(dummyContext)
+                                    val result = service.generateEncouragementDynamic(gameContext)
                                     isLlmLoading = false
                                     if (result.isSuccess) {
                                         val res = result.getOrThrow()
                                         llmPrompt = res.prompt
                                         llmResponse = res.response
+                                        
+                                        // Save history and trigger notification
+                                        val messageParts = res.response.split("🎯 Réponse finale :\n")
+                                        val message = if (messageParts.size > 1) messageParts[1] else res.response
+                                        
+                                        repository.addCoachHistory(message)
+                                        coachHistory = repository.getCoachHistory() // update UI state
+                                        
+                                        if (permissionGranted) {
+                                            sendTestNotification(context, gameContext.primarchName, message, levelDetails.currentLevel.primarch?.portrait_square)
+                                        }
                                     } else {
                                         llmResponse = result.exceptionOrNull()?.message ?: "Erreur inconnue"
                                     }
@@ -218,5 +250,50 @@ fun TestCoachScreen(
                 }
             }
         }
+    }
+}
+
+private fun sendTestNotification(context: Context, title: String, message: String, portraitName: String?) {
+    val channelId = "coach_channel"
+    val notificationId = System.currentTimeMillis().toInt()
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val name = "Coach Primarque (Test)"
+        val descriptionText = "Notifications d'encouragement de test"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(channelId, name, importance).apply {
+            description = descriptionText
+        }
+        val notificationManager: NotificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    val portraitResId = if (portraitName != null) {
+        val cleanName = portraitName.substringBeforeLast(".")
+        context.resources.getIdentifier(cleanName, "drawable", context.packageName)
+    } else 0
+    
+    val largeIcon = if (portraitResId != 0) {
+        BitmapFactory.decodeResource(context.resources, portraitResId)
+    } else null
+
+    val builder = NotificationCompat.Builder(context, channelId)
+        .setSmallIcon(android.R.drawable.ic_dialog_info) // TODO: replace with app icon
+        .setContentTitle(title)
+        .setContentText(message)
+        .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setAutoCancel(true)
+
+    if (largeIcon != null) {
+        builder.setLargeIcon(largeIcon)
+    }
+
+    try {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(notificationId, builder.build())
+    } catch (e: SecurityException) {
+        // Permission not granted
     }
 }

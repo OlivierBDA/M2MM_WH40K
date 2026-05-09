@@ -54,9 +54,26 @@ class CoachWorker(
             val score7DaysAgo = repository.getScoreAtTimestamp(sevenDaysAgoTimestamp)
             
             val recentLogs = repository.getRecentActivityLogs()
-            val recentActivitiesDone = recentLogs.mapNotNull { log ->
-                config.activities.find { it.id == log.activityId }?.name
-            }.distinct()
+            val lastActivityDates = repository.getLastActivityDates()
+            val now = System.currentTimeMillis()
+            
+            val activitiesDetails = config.activities.map { activity ->
+                val count = recentLogs.count { it.activityId == activity.id }
+                val lastTimestamp = lastActivityDates[activity.id]
+                val daysSince = if (lastTimestamp != null) {
+                    ((now - lastTimestamp) / (24L * 60 * 60 * 1000)).toInt()
+                } else {
+                    999
+                }
+                
+                val statusPalette = config.status_levels[activity.type] ?: emptyList()
+                val status = me.data_architect.m2mm.data.determineStatus(daysSince, activity, statusPalette)
+                val statusLabel = status?.label ?: "Inconnu"
+                
+                "${activity.name} x$count ($statusLabel)"
+            }
+            
+            val coachHistory = repository.getCoachHistory()
             
             val gameContext = GameContext(
                 primarchName = levelDetails.currentLevel.primarch?.name ?: "Inconnu",
@@ -65,9 +82,8 @@ class CoachWorker(
                 currentLevel = levelDetails.currentLevel.name,
                 pointsToNextLevel = levelDetails.nextLevelThreshold - currentScore,
                 score7DaysAgo = score7DaysAgo,
-                recentActivitiesDone = recentActivitiesDone,
-                recentActivitiesMissed = emptyList(), // Not explicitly tracked in DB right now
-                allAvailableActivities = config.activities.map { it.name }
+                activitiesDetails = activitiesDetails,
+                coachHistory = coachHistory
             )
             
             android.util.Log.d("CoachWorker", "GameContext created: $gameContext")
@@ -86,6 +102,9 @@ class CoachWorker(
                 responseString ?: "Continue tes efforts, Frère !"
             }
             android.util.Log.d("CoachWorker", "Message to display: $message")
+            
+            // Save to history
+            repository.addCoachHistory(message)
             
             // Retrieve portrait
             val portraitName = levelDetails.currentLevel.primarch?.portrait_square?.substringBeforeLast(".")
