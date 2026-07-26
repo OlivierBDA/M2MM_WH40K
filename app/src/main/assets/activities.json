@@ -82,6 +82,22 @@
       }
     },
     {
+      "id": "finances",
+      "name": "Finances",
+      "points": 100,
+      "icon": "ultramarine_icon_finances.png",
+      "align": "left",
+      "order": 6,
+      "type": "good",
+      "day_thresholds": {
+        "Au top": 15,
+        "Super": 21,
+        "Correct": 30,
+        "Bof": 45,
+        "Mauvais": 60
+      }
+    },
+    {
       "id": "mauvais_aliment",
       "name": "Mauvais aliment",
       "points": -50,

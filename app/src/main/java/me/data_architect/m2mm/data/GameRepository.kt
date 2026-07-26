@@ -42,7 +42,25 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
         }
 
         val activitiesConfig = try {
-            activitiesFile.bufferedReader().use { json.decodeFromString<ActivitiesConfig>(it.readText()) }
+            val userConfig = activitiesFile.bufferedReader().use { json.decodeFromString<ActivitiesConfig>(it.readText()) }
+            val defaultString = context.assets.open("activities.json").bufferedReader().use { it.readText() }
+            val defaultActivitiesConfig = json.decodeFromString<ActivitiesConfig>(defaultString)
+            val existingIds = userConfig.activities.map { it.id }.toSet()
+            val missingActivities = defaultActivitiesConfig.activities.filter { it.id !in existingIds }
+
+            if (missingActivities.isNotEmpty()) {
+                val mergedList = userConfig.activities + missingActivities
+                val mergedConfig = userConfig.copy(activities = mergedList)
+                try {
+                    val mergedString = json.encodeToString(ActivitiesConfig.serializer(), mergedConfig)
+                    context.openFileOutput("activities.json", Context.MODE_PRIVATE).use { output ->
+                        output.write(mergedString.toByteArray())
+                    }
+                } catch (e: Exception) { }
+                mergedConfig
+            } else {
+                userConfig
+            }
         } catch (e: Exception) {
             val defaultString = context.assets.open("activities.json").bufferedReader().use { it.readText() }
             json.decodeFromString<ActivitiesConfig>(defaultString)
@@ -209,6 +227,10 @@ class GameRepository(val context: Context, private val dao: M2MMDao) {
 
     suspend fun getRecentActivityLogs(): List<ActivityLog> = withContext(Dispatchers.IO) {
         dao.getAllLogs().filter { it.timestamp >= System.currentTimeMillis() - (7L * 24 * 60 * 60 * 1000) }
+    }
+
+    suspend fun getAllLogs(): List<ActivityLog> = withContext(Dispatchers.IO) {
+        dao.getAllLogs()
     }
 
     suspend fun getScoreAtTimestamp(timestamp: Long): Int = withContext(Dispatchers.IO) {

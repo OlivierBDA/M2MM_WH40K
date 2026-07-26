@@ -30,6 +30,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.runtime.saveable.rememberSaveable
 import java.util.Calendar
@@ -67,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 val uiState by mainViewModel.uiState.collectAsState()
                 val configBySettings by settingsViewModel.configState.collectAsState()
                 val pointFeedback by mainViewModel.pointFeedback.collectAsState()
-                val scoreHistory by statsViewModel.historyState.collectAsState()
+                val statsUiState by statsViewModel.uiState.collectAsState()
                 
                 var currentScreen by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("main") }
                 var hasPlayedIntro by rememberSaveable { mutableStateOf(false) }
@@ -147,7 +150,7 @@ class MainActivity : ComponentActivity() {
                         }
                         "stats" -> {
                             StatsScreen(
-                                scoreHistory = scoreHistory,
+                                statsUiState = statsUiState,
                                 onBack = { currentScreen = "main" }
                             )
                         }
@@ -300,25 +303,26 @@ fun MainScreen(
                 }
             }
 
-            // Legion Insignias Overlay (Dynamic Grid)
+            // Legion Insignias Overlay (Dynamic Grid - Centered in middle to avoid overlapping activity columns)
             if (levelDetails.achievedLegions.isNotEmpty()) {
-                val chunks = levelDetails.achievedLegions.chunked(6) // Max 6 insignias par ligne
+                val perRow = 6
+                val chunks = levelDetails.achievedLegions.chunked(perRow)
                 Column(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start,
+                        .padding(bottom = 12.dp)
+                        .fillMaxWidth(0.55f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Bottom
                 ) {
                     // On inverse pour que le premier bloc soit dessiné en bas (dernier du column)
                     chunks.reversed().forEach { rowInsignias ->
                         Row(
-                            horizontalArrangement = Arrangement.Start,
+                            horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.Bottom,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 4.dp)
+                                .padding(top = 2.dp)
                         ) {
                             rowInsignias.forEach { legion ->
                                 val insigniaResId = context.resources.getIdentifier(
@@ -334,13 +338,12 @@ fun MainScreen(
                                         Image(
                                             painter = painterResource(id = insigniaResId),
                                             contentDescription = "Insigne ${legion.name}",
-                                            modifier = Modifier.size(50.dp)
+                                            modifier = Modifier.size(38.dp)
                                         )
                                     }
                                 }
                             }
-                            // Espaces vides pour conserver l'alignement sur 6 colonnes même si la ligne est incomplète
-                            repeat(6 - rowInsignias.size) {
+                            repeat(perRow - rowInsignias.size) {
                                 Box(modifier = Modifier.weight(1f))
                             }
                         }
@@ -699,7 +702,7 @@ fun ActivityButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsScreen(
-    scoreHistory: List<ScoreHistory>,
+    statsUiState: StatsUiState,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -723,6 +726,7 @@ fun StatsScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
             Text(
@@ -736,27 +740,118 @@ fun StatsScreen(
                     .fillMaxWidth()
                     .height(300.dp)
             ) {
-                if (scoreHistory.isEmpty()) {
+                if (statsUiState.scoreHistory.isEmpty()) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text("Pas encore de données", color = Color.Gray)
                     }
                 } else {
                     ScoreChart(
-                        history = scoreHistory,
+                        history = statsUiState.scoreHistory,
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
                     )
                 }
             }
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Text(
-                text = "Note : Le graphique commence à enregistrer les données après la mise à jour.",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray
+                text = "Récapitulatif des activités (30 derniers jours)",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 12.dp)
             )
+
+            ActivityStatsTable(
+                activityStats = statsUiState.activityStats,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun ActivityStatsTable(
+    activityStats: List<ActivityStat>,
+    modifier: Modifier = Modifier
+) {
+    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()) }
+
+    ElevatedCard(modifier = modifier) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Activité",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(2f)
+                )
+                Text(
+                    text = "Dernière fois",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(2.2f)
+                )
+                Text(
+                    text = "30j",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(0.8f),
+                    textAlign = TextAlign.End
+                )
+            }
+
+            HorizontalDivider()
+
+            if (activityStats.isEmpty()) {
+                Text(
+                    text = "Aucune activité configurée",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+            } else {
+                activityStats.forEachIndexed { index, item ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = item.activity.name,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(2f)
+                        )
+                        Text(
+                            text = item.lastDate?.let { dateFormatter.format(java.util.Date(it)) } ?: "Jamais",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (item.lastDate != null) MaterialTheme.colorScheme.onSurface else Color.Gray,
+                            modifier = Modifier.weight(2.2f)
+                        )
+                        Text(
+                            text = "${item.count30Days}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(0.8f),
+                            textAlign = TextAlign.End
+                        )
+                    }
+
+                    if (index < activityStats.size - 1) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    }
+                }
+            }
         }
     }
 }
@@ -767,44 +862,52 @@ fun ScoreChart(
     modifier: Modifier = Modifier
 ) {
     val thirtyDaysAgo = System.currentTimeMillis() - (30L * 24 * 60 * 60 * 1000)
-    
-    // Group by day and take the last score of the day
-    val dailyData = history
-        .filter { it.timestamp >= thirtyDaysAgo }
-        .groupBy { 
-            val cal = Calendar.getInstance().apply { timeInMillis = it.timestamp }
-            cal.get(Calendar.DAY_OF_YEAR) + (cal.get(Calendar.YEAR) * 365)
-        }
-        .mapValues { it.value.last().score }
-        .toSortedMap()
 
-    val maxScore = maxOf((dailyData.values.maxOrNull() ?: 100).toFloat() * 1.2f, 100f)
-    
+    val pointsList = mutableListOf<Float>()
+    for (i in 0 until 30) {
+        val dayTimestamp = thirtyDaysAgo + (i.toLong() * 24 * 60 * 60 * 1000)
+        val latestScoreAtDay = history
+            .filter { it.timestamp <= (dayTimestamp + 24L * 60 * 60 * 1000 - 1) }
+            .lastOrNull()?.score?.toFloat()
+
+        if (latestScoreAtDay != null) {
+            pointsList.add(latestScoreAtDay)
+        }
+    }
+
+    val minScore = pointsList.minOrNull() ?: 0f
+    val rawMaxScore = pointsList.maxOrNull() ?: 100f
+    val maxScore = if (rawMaxScore == minScore) minScore + 500f else rawMaxScore
+
+    val stepSize = 500f
+    val minDisplayScore = minScore - stepSize
+    val maxDisplayScore = maxScore + 2f * stepSize
+    val displayRange = maxDisplayScore - minDisplayScore
+
     val primaryColor = MaterialTheme.colorScheme.primary
 
     Canvas(modifier = modifier) {
         val width = size.width
         val height = size.height
-        val spacing = width / 29f 
+        val spacing = width / 29f
 
-        // Dessin des lignes de niveaux et légions
-        val maxScoreValue = maxScore.toInt()
-        for (scoreLevel in 0..maxScoreValue step 500) {
-            if (scoreLevel == 0) continue // Ignore la ligne du bas
-            
-            val y = height - (scoreLevel.toFloat() / maxScore * height)
-            val isLegionLevel = scoreLevel % 3500 == 0
-            
-            // Ligne fine bleu pour niveau, ligne épaisse bleu foncé profond pour légion
-            val lineColor = if (isLegionLevel) Color(0xFF1565C0) else Color(0xFF64B5F6)
+        var lineScore = minDisplayScore
+        while (lineScore <= maxDisplayScore + 0.1f) {
+            val y = height - ((lineScore - minDisplayScore) / displayRange * height)
+            val scoreInt = lineScore.toInt()
+            val isLegionLevel = (scoreInt > 0) && (scoreInt % 3500 == 0)
+
+            val lineColor = if (isLegionLevel) Color(0xFF1565C0) else Color(0xFF64B5F6).copy(alpha = 0.4f)
             val strokeWidth = if (isLegionLevel) 2.dp.toPx() else 1.dp.toPx()
-            
+
             drawLine(
                 color = lineColor,
                 start = androidx.compose.ui.geometry.Offset(0f, y),
                 end = androidx.compose.ui.geometry.Offset(width, y),
                 strokeWidth = strokeWidth
             )
+
+            lineScore += stepSize
         }
 
         val path = Path()
@@ -813,18 +916,14 @@ fun ScoreChart(
         var firstPoint = true
         for (i in 0 until 30) {
             val dayTimestamp = thirtyDaysAgo + (i.toLong() * 24 * 60 * 60 * 1000)
-            val cal = Calendar.getInstance().apply { timeInMillis = dayTimestamp }
-            val dayKey = cal.get(Calendar.DAY_OF_YEAR) + (cal.get(Calendar.YEAR) * 365)
-            
-            // Find the latest score available UP TO this day
             val latestScoreAtDay = history
                 .filter { it.timestamp <= (dayTimestamp + 24L * 60 * 60 * 1000 - 1) }
                 .lastOrNull()?.score?.toFloat()
-            
+
             if (latestScoreAtDay != null) {
                 val x = i * spacing
-                val y = height - (latestScoreAtDay / maxScore * height)
-                
+                val y = height - ((latestScoreAtDay - minDisplayScore) / displayRange * height)
+
                 if (firstPoint) {
                     path.moveTo(x, y)
                     firstPoint = false
@@ -840,7 +939,7 @@ fun ScoreChart(
             color = primaryColor,
             style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
         )
-        
+
         points.forEach { point ->
             drawCircle(
                 color = primaryColor,
